@@ -70,7 +70,7 @@ public class CustomGlowRenderer : MonoBehaviour
         _glowCommandBuffer.SetGlobalTexture("_GlowMap", tempID);
 
         //add this command buffer to the pipeline
-        cam.AddCommandBuffer(CameraEvent.AfterGBuffer, _glowCommandBuffer);
+        cam.AddCommandBuffer(CameraEvent.BeforeLighting, _glowCommandBuffer);
     }
 }
 

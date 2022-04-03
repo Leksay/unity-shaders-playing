@@ -3,7 +3,7 @@ Shader "Leksay/BloomEffectShader"
     Properties
     {
         _MainTex ("Texture", 2D) = "white" {}
-        _Radius ("Radius", Float) = 0.25
+        _Radius ("Radius", Range(0,6)) = 3
     }
     SubShader
     {
@@ -32,6 +32,7 @@ Shader "Leksay/BloomEffectShader"
 
             uniform sampler2D _MainTex;
             uniform float4 _MainTex_ST;
+
             uniform sampler2D _GlowMap;
             uniform float4 _GlowMap_TexelSize;
             uniform half4 _GlowMap_HDR;
@@ -80,12 +81,10 @@ Shader "Leksay/BloomEffectShader"
                 blurY += guassianBlur(_GlowMap, i.uv, _GlowMap_TexelSize.x, _GlowMap_TexelSize.y, float2(0, 0.7)) / 2;
                 blurY += guassianBlur(_GlowMap, i.uv, _GlowMap_TexelSize.x, _GlowMap_TexelSize.y, float2(0, 1)) / 3;
 
-                half3 hdrBlur = DecodeHDR(blurX, _GlowMap_HDR) + DecodeHDR(blurY, _GlowMap_HDR);
-                hdrBlur *= unity_ColorSpaceDouble.rgb;
+                half3 blur = blurX + blurY;
 
-                hdrBlur *= tex2D(_GlowMap, i.uv).a == 0 ? 1 : 0;
-
-                return fixed4(col.rgb + hdrBlur, 1);
+                blur *= 1 - tex2D(_GlowMap, i.uv).a;
+                return fixed4(col.rgb + blur, 1);
             }
             ENDCG
         }
